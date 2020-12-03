@@ -87,4 +87,36 @@ Route::group(['middleware' => 'auth:api'], function (){
     Route::post('/blogpost/notfeature/{id}','Api\BlogPostController@Notfeature');
 
     //Roles and Permission And User Crud
+    /*
+     * start User Routes
+    */
+
+
+    /*
+     * End User Routes
+     * */
+
+    /*
+    * Start Roles Routes
+    */
+        Route::get('/roles','Api\RoleController@index');
+        Route::post('/roles/store','Api\RoleController@store');
+        Route::get('/roles/edit/{id}','Api\RoleController@edit');
+        Route::post('/roles/update/{id}','Api\RoleController@update');
+        Route::delete('/roles/destroy/{id}','Api\RoleController@destroy');
+    /*
+     * End Roles Routes
+   */
+
+    /*
+    * Start Permissions Routes
+    */
+        Route::get('/permission','Api\PermissionController@index');
+        Route::post('/permission/store','Api\PermissionController@store');
+        Route::get('/permission/edit/{id}','Api\PermissionController@edit');
+        Route::post('/permission/update/{id}','Api\PermissionController@update');
+        Route::delete('/permission/destroy/{id}','Api\PermissionController@destroy');
+    /*
+     * End Permissions Routes
+   */
 });

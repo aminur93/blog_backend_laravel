@@ -18,4 +18,6 @@ in this project i have done many core feature. some of new developer maybe helpf
 - user list
 - email
 - sms
+- roles
+- permission
 
