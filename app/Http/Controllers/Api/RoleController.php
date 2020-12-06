@@ -13,21 +13,39 @@ class RoleController extends Controller
 {
     public function index()
     {
-        $role = DB::table('roles')
-            ->select(
-                'roles.id as id',
-                'roles.name as role_name',
-                DB::raw('group_concat(permissions.name) as permission_name')
-            )
-            ->join('role_has_permissions','roles.id','=','role_has_permissions.role_id')
-            ->join('permissions','role_has_permissions.permission_id','=','permissions.id')
-            ->groupBy('role_has_permissions.role_id')
-            ->orderBy('roles.id','desc')
-            ->get();
+        $role = Role::latest()->get();
+
+        $permissionList = DB::table('permissions')
+                ->select(
+                    'permissions.id as id',
+                    'permissions.name as permission_name',
+                    'role_has_permissions.role_id as role_id'
+                )
+                ->join('role_has_permissions','permissions.id','=','role_has_permissions.permission_id')
+                ->get();
+
+
+        $role_permission = [];
+
+        foreach($role as $key => $r)
+        {
+            $role_permission[$key]['role_name'] = $r->name;
+            $role_permission[$key]['id'] = $r->id;
+
+           foreach ($permissionList as $pl)
+           {
+               if ($r->id == $pl->role_id)
+               {
+                   $role_permission[$key]['permission_name'][] = $pl->permission_name;
+
+               }
+
+           }
+        }
 
 
         return response()->json([
-            'roles' => $role,
+            'roles' => $role_permission,
             'status_code' => 200
         ], Response::HTTP_OK);
     }
@@ -72,16 +90,76 @@ class RoleController extends Controller
 
     public function edit($id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+            ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
+            ->all();
+
+        $rp_array = [];
+        foreach ($rolePermissions as $rp)
+        {
+            $rp_array[] = $rp;
+        }
+
+
+
+        return response()->json([
+            'role' => $role,
+            'rolePermission' => $rp_array,
+            'status_code' => 200
+        ], Response::HTTP_OK);
     }
 
     public function update(Request $request, $id)
     {
-        //
+        if ($request->isMethod('post'))
+        {
+            DB::beginTransaction();
+
+            try{
+                // Step 1 : Create Role
+                //$role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
+
+                $role = Role::findOrFail($id);
+
+                $role->name = $request->name;
+
+                $role->save();
+
+                //$permissions = explode(',',$request->permission);
+
+                $role->syncPermissions($request->input('permission'));
+
+                DB::commit();
+
+                return response()->json([
+                    'message' => 'Role Updated Successfully'
+                ],200);
+
+            }catch(\Illuminate\Database\QueryException $e){
+                DB::rollback();
+
+                $error = $e->getMessage();
+
+                return response()->json([
+                    'message' => $error
+                ],500);
+            }
+        }
     }
 
     public function destroy($id)
     {
-        //
+        $role = Role::findOrFail($id);
+
+        DB::table('role_has_permissions')->where('role_id',$id)->delete();
+
+        $role->delete();
+
+        return response()->json([
+            'message' => 'Role Deleted Successfully',
+            'status_code'=> 200
+        ], Response::HTTP_OK);
     }
 }

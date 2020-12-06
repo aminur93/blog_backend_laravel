@@ -90,8 +90,12 @@ Route::group(['middleware' => 'auth:api'], function (){
     /*
      * start User Routes
     */
-
-
+        Route::get('/users','Api\UsersController@index');
+        Route::get('/users/get_role','Api\UsersController@getRole');
+        Route::post('/users/store','Api\UsersController@store');
+        Route::get('/users/edit/{id}','Api\UsersController@edit');
+        Route::post('/users/update/{id}','Api\UsersController@update');
+        Route::delete('/users/destroy/{id}','Api\UsersController@destroy');
     /*
      * End User Routes
      * */
