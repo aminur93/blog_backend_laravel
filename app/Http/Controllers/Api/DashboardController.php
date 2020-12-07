@@ -7,7 +7,9 @@ use App\Category;
 use App\Http\Controllers\Controller;
 use App\SubCategory;
 use App\Tag;
+use App\User;
 use Illuminate\Http\Request;
+use DB;
 
 class DashboardController extends Controller
 {
@@ -77,6 +79,27 @@ class DashboardController extends Controller
 
         return response()->json([
             'blog_list' => $blogList,
+            'status_code' => 200
+        ],200);
+    }
+
+    public function getUser()
+    {
+        $user = DB::table('users')
+            ->select(
+                'users.id',
+                'users.name as name',
+                'users.email as email',
+                'roles.name as role'
+            )
+            ->Join('model_has_roles','users.id','=','model_has_roles.model_id')
+            ->Join('roles','model_has_roles.role_id','=','roles.id')
+            ->where('roles.name','<>','admin')
+            ->get()
+            ->take(5);
+
+        return response()->json([
+            'user_list' => $user,
             'status_code' => 200
         ],200);
     }

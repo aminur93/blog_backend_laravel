@@ -49,7 +49,7 @@ class UsersController extends Controller
             try{
                 // Step 1 : Create Role
                 $input = $request->all();
-                $input['password'] = Hash::make($input['password']);
+                $input['password'] = bcrypt($input['password']);
 
 
                 $user = User::create($input);
@@ -113,12 +113,6 @@ class UsersController extends Controller
             try{
                 // Step 1 : Update Users
                 $input = $request->all();
-                if(!empty($input['password'])){
-                    $input['password'] = Hash::make($input['password']);
-                }else{
-                    $input = array_except($input,array('password'));
-                }
-
 
                 $user = User::findOrFail($id);
                 $user->update($input);
@@ -155,5 +149,37 @@ class UsersController extends Controller
             'message' => 'user Deleted Successfully',
             'status_code' => 200
         ], Response::HTTP_OK);
+    }
+
+    public function changePassword(Request $request, $id)
+    {
+        if ($request->isMethod('post'))
+        {
+            DB::beginTransaction();
+
+            try{
+                // Step 1 : Create Role
+                $input = $request->all();
+                $input['password'] = bcrypt($input['password']);
+
+
+                $user = User::findOrFail($id);
+                $user->update($input);
+
+                DB::commit();
+
+                return response()->json([
+                    'message' => 'User Password updated Successfully'
+                ],200);
+
+            }catch(\Illuminate\Database\QueryException $e){
+                DB::rollback();
+                $error = $e->getMessage();
+
+                return response()->json([
+                    'error' => $error
+                ],200);
+            }
+        }
     }
 }

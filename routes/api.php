@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth:api'], function (){
     Route::get('/dashboard/get_category','Api\DashboardController@getCategory');
     Route::get('/dashboard/get_tag','Api\DashboardController@getTag');
     Route::get('/dashboard/get_blog','Api\DashboardController@getBlog');
+    Route::get('/dashboard/get_user','Api\DashboardController@getUser');
 
     //Category Routes
     Route::get('/category', 'Api\CategoryController@index');
@@ -96,6 +97,7 @@ Route::group(['middleware' => 'auth:api'], function (){
         Route::get('/users/edit/{id}','Api\UsersController@edit');
         Route::post('/users/update/{id}','Api\UsersController@update');
         Route::delete('/users/destroy/{id}','Api\UsersController@destroy');
+        Route::post('/users/password_change/{id}','Api\UsersController@changePassword');
     /*
      * End User Routes
      * */
