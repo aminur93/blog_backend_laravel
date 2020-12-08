@@ -17,6 +17,7 @@ Route::get('front/get_Tag_blog/{tag_id}','Api\FrontController@getTagBlog');
 Route::get('front/BlogSearchList','Api\FrontController@getBlogSearchList');
 Route::get('front/SearchBlog','Api\FrontController@getBlogSearch');
 Route::post('front/contact_us','Api\FrontController@contactUs');
+Route::post('front/send/email','Api\FrontController@send');
 
 
 //Auth Routes
@@ -49,6 +50,8 @@ Route::group(['middleware' => 'auth:api'], function (){
     Route::get('/dashboard/get_tag','Api\DashboardController@getTag');
     Route::get('/dashboard/get_blog','Api\DashboardController@getBlog');
     Route::get('/dashboard/get_user','Api\DashboardController@getUser');
+    Route::get('/dashboard/get_contact','Api\DashboardController@getContact');
+    Route::get('/dashboard/single_contact/{id}','Api\DashboardController@singleContact');
 
     //Category Routes
     Route::get('/category', 'Api\CategoryController@index');

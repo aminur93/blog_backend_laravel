@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\BlogPost;
 use App\Category;
+use App\ContactUs;
 use App\Http\Controllers\Controller;
 use App\SubCategory;
 use App\Tag;
@@ -100,6 +101,26 @@ class DashboardController extends Controller
 
         return response()->json([
             'user_list' => $user,
+            'status_code' => 200
+        ],200);
+    }
+
+    public function getContact()
+    {
+        $contactList = ContactUs::latest()->get();
+
+        return response()->json([
+            'contact_message' => $contactList,
+            'status_code' => 200
+        ],200);
+    }
+
+    public function singleContact($id)
+    {
+        $contact = ContactUs::findOrFail($id);
+
+        return response()->json([
+            'single_contact_list' => $contact,
             'status_code' => 200
         ],200);
     }

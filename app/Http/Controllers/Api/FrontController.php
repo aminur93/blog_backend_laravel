@@ -7,10 +7,13 @@ use App\Category;
 use App\Comments;
 use App\ContactUs;
 use App\Http\Controllers\Controller;
+use App\Mail\ReplyMessageMail;
 use App\SubCategory;
 use App\Tag;
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Mail;
 
 class FrontController extends Controller
 {
@@ -266,5 +269,20 @@ class FrontController extends Controller
                 ],500);
             }
         }
+    }
+
+    public function send(Request $request)
+    {
+        $data = array(
+            'name' => $request->name,
+            'subject' => $request->subject,
+            'message' => $request->message
+        );
+
+        Mail::to($request->email)->send(new ReplyMessageMail($data));
+
+        return response()->json([
+            'message' => 'reply Email Send Successfully'
+        ],Response::HTTP_OK);
     }
 }
